@@ -2,11 +2,11 @@ function getCash(mode) {
   prompt("press enter to get your grand prize");
   switch (mode) {
     case 1:
-      return Math.round(Math.random() * 100);
+      return Math.round(Math.random() * 10000) + "rupess";
     case 2:
-      return Math.round(Math.random() * 10000);
-    case 3:
-      return Math.round(Math.random() * 10000000);
+      return Math.round(Math.random() * 1000000) + "rupeesss";
+    default:
+      console.log("exitted");
   }
 }
 
@@ -23,7 +23,8 @@ function getDescription() {
   console.log("▶ '🟦'  indicates field");
   prompt("press any key");
   console.clear();
-  const mode = +prompt("select mode :\n press 1 ➡️  easy \n press 2 ➡️  hard \n press 3 ➡️  extreme hard");
+  const mode = +prompt("select mode :\n press 1 ➡️  easy \n press 2 ➡️  hard"
+  );
   console.log("lets start the game");
   return mode;
 }
@@ -43,7 +44,7 @@ function printBoard() {
 
 function failedMove(position, nextPosition) {
   let string = '🔴end';
-  for (let rowIndex = number - 1 ; rowIndex >= 0; rowIndex--) {
+  for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
     for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
       if ((rowIndex * number) + columnIndex === nextPosition) {
         string += '🟥';
@@ -174,31 +175,12 @@ function checkAndGetValidDiection(direction, position) {
 function MessageAfterFailedMove(position, nextPosition) {
   console.clear();
   console.log(failedMove(position, nextPosition));
-  console.log("younhave stepped on the bomb got you back to the previous location");
+  console.log("you have stepped on the bomb got you back to the previous location");
 }
 
 function MessageAfterSuccessfulMove(position, nextPosition) {
   console.clear();
   console.log(successMove(position, nextPosition));
-}
-
-function runExtremeHardMode(position, noOfMoves, pathHasNoBomb) {
-  if (position === number * number) {
-    return noOfMoves;
-  }
-
-  const direction = checkAndGetValidDiection(0, position);
-  let nextPosition = getNextPosition(position, direction);
-
-  if (!isSafeMove(nextPosition, pathHasNoBomb)) {
-    MessageAfterFailedMove(position, nextPosition);
-
-    return runExtremeHardMode(position, noOfMoves + 1, pathHasNoBomb);
-  }
-
-  MessageAfterSuccessfulMove(position, nextPosition);
-
-  return runExtremeHardMode(nextPosition, noOfMoves + 1, setRandomMove(nextPosition));
 }
 
 function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
@@ -212,7 +194,7 @@ function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
   if (!isSafeMove(nextPosition, pathHasNoBomb1) && !isSafeMove(nextPosition, pathHasNoBomb2)) {
     MessageAfterFailedMove(position, nextPosition);
 
-    return runExtremeHardMode(position, noOfMoves + 1, pathHasNoBomb1);
+    return runHardMode(position, noOfMoves + 1, pathHasNoBomb1);
   }
 
   MessageAfterSuccessfulMove(position, nextPosition);
@@ -244,31 +226,20 @@ function runEasyMode(position, noOfMoves, pathHasBomb) {
 }
 
 function play() {
-  const mode = getDescription();
-  switch (mode) {
-    case 1:
-      console.clear();
-      console.log(printBoard());
-      console.log("yay... you have completd the game in ", runEasyMode(1, 0, setRandomMove(1)), "moves");
-      console.log(getCash(mode));
-      break;
-
-    case 2:
-      console.clear();
-      console.log(printBoard());
-      console.log("yay... you have completd the game in ", runHardMode(1, 0, setRandomMove(1), setRandomMove(1)), "moves");
-      console.log(getCash(mode));
-      break;
-
-    case 3:
-      console.clear();
-      console.log(printBoard());
-      console.log("yay... you have completd the game in ", runExtremeHardMode(1, 0, setRandomMove(1)), "moves");
-      console.log(getCash(mode));
-      break;
-    default:
-      getDescription();
+  if (mode === 1) {
+    console.log("you have completed the easy mode mine game in ", runEasyMode(1, 0, setRandomMove(1)), ' moves');
+  }
+  if (mode === 2) {
+    console.log("you have completed the game in ", runHardMode(1, 0, setRandomMove(1), setRandomMove(1)), " moves");
   }
 }
-const number = +prompt("enter grid size");
-play();
+
+console.clear();
+const mode = getDescription();
+let number = 0;
+if (mode === 1 || mode === 2) {
+  number = +prompt("enter grid size");
+  console.log(printBoard());
+  play();
+}
+console.log(getCash(mode));
