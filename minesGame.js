@@ -17,7 +17,7 @@ function getDescription() {
   console.log("▶ for every successful move bombs position may change");
   console.log("▶ if you step on the bomb you will be gotten back to the previous position");
   console.log("▶ bomb positions does not changes if you step on the bomb");
-  console.log("▶ '🟩'  indicates current position");
+  console.log("▶ '🦸‍♂️'  indicates current position");
   console.log("▶ '⬜️'  indicates previous position");
   console.log("▶ '🟥'  indicates bomb position which you have stepped on");
   console.log("▶ '🟦'  indicates field");
@@ -29,49 +29,44 @@ function getDescription() {
 }
 
 function printBoard() {
-  let string = '';
-  string += 'end';
-  for (let counter1 = 0; counter1 < 5; counter1++) {
-    for (let counter2 = 0; counter2 < 5; counter2++) {
-      const condition = counter1 === 4 && counter2 === 4;
-
-      string += condition ? "🟦  ⬅️ start" : "🟦 ";
+  let string = 'end';
+  for (let rowindex = 0; rowindex < number; rowindex++) {
+    for (let columnIndex = 0; columnIndex < number; columnIndex++) {
+      string += "🟦";
     }
-    string += "\n";
-    string += "   ";
+    if (rowindex === number - 1) {
+      return string + "⬅️ start";
+    }
+    string += "\n   ";
   }
-
-  return string;
 }
 
 function failedMove(position, nextPosition) {
-  let string = '';
-  string += 'end';
-  for (let counter1 = 4; counter1 >= 0; counter1--) {
-    for (let counter2 = 5; counter2 >= 1; counter2--) {
-      if ((counter1 * 5) + counter2 === nextPosition) {
-        string += '🟥 ';
+  let string = '🔴end';
+  for (let rowIndex = number - 1 ; rowIndex >= 0; rowIndex--) {
+    for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
+      if ((rowIndex * number) + columnIndex === nextPosition) {
+        string += '🟥';
       } else {
-        string += (counter1 * 5) + counter2 === position ? '🟩 ' : '🟦 ';
+        string += (rowIndex * number) + columnIndex === position ? '🦸‍♂️' : '🟦';
       }
     }
-    string += counter1 === -1 ? "⬅️ start" : "\n   ";
+    string += rowIndex === 0 ? "⬅️ start" : "\n     ";
   }
   return string;
 }
 
 function successMove(position, nextPosition) {
-  let string = '';
-  string += 'end';
-  for (let counter1 = 4; counter1 >= 0; counter1--) {
-    for (let counter2 = 5; counter2 >= 1; counter2--) {
-      if ((counter1 * 5) + counter2 === nextPosition) {
-        string += '🟩 ';
+  let string = '🔴end';
+  for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
+    for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
+      if ((rowIndex * number) + columnIndex === nextPosition) {
+        string += '🦸‍♂️';
       } else {
-        string += (counter1 * 5) + counter2 === position ? '⬜️ ' : '🟦 ';
+        string += (rowIndex * number) + columnIndex === position ? '⬜️' : '🟦';
       }
     }
-    string += counter1 === -1 ? "⬅️ start" : "\n   ";
+    string += rowIndex === 0 ? "⬅️ start" : "\n     ";
   }
   return string;
 }
@@ -81,53 +76,53 @@ function getRandomNumber() {
 }
 
 function setRandomMove(position) {
-  if (position === 20 || position === 24) {
-    return 25;
+  if (position === number * number - 1 || position === number * number - number) {
+    return number * number;
   }
   if (position === 1) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position + 5;
+    return getRandomNumber() % 2 === 0 ? position + 1 : position + number;
   }
 
-  if (position === 21) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position - 5;
+  if (position === number * number - number + 1) {
+    return getRandomNumber() % 2 === 0 ? position + 1 : position - number;
   }
 
-  if (position === 5) {
-    return getRandomNumber() % 2 === 0 ? position + 5 : position - 1;
+  if (position === number) {
+    return getRandomNumber() % 2 === 0 ? position + number : position - 1;
   }
 
-  if (position < 5) {
+  if (position < number) {
     switch (getRandomNumber() % 3) {
       case 0:
         return position - 1;
       case 1:
         return position + 1;
       case 2:
-        return position + 5;
+        return position + number;
     }
   }
 
-  if (position % 5 === 1) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position + 5;
+  if (position % number === 1) {
+    return getRandomNumber() % 2 === 0 ? position + 1 : position + number;
   }
 
-  if (position % 5 === 0) {
-    return getRandomNumber() % 2 === 0 ? position - 1 : position + 5;
+  if (position % number === 0) {
+    return getRandomNumber() % 2 === 0 ? position - 1 : position + number;
   }
 
-  if (position > 20) {
-    return getRandomNumber() % 2 === 0 ? position - 5 : position + 1;
+  if (position > number * number - number) {
+    return getRandomNumber() % 2 === 0 ? position - number : position + 1;
   }
 
   switch (getRandomNumber() % 4) {
     case 0:
       return position + 1;
     case 1:
-      return position + 5;
+      return position + number;
     case 2:
       return position - 1;
     case 3:
-      return position - 5;
+      return position - number;
   }
 }
 
@@ -137,16 +132,16 @@ function isValidInput(direction) {
 
 function isNextMoveValid(position, direction) {
   if (direction === 1) {
-    return position === 5 || position === 10 || position === 15 || position === 20 || position === 25;
+    return position % number === 0;
   }
   if (direction === 2) {
-    return position === 1 || position === 6 || position === 11 || position === 16 || position === 21;
+    return position % number === 1;
   }
   if (direction === 3) {
-    return position === 21 || position === 22 || position === 23 || position === 24 || position === 25;
+    return position > number * number - number;
   }
   if (direction === 4) {
-    return position === 1 || position === 2 || position === 3 || position === 4 || position === 5;
+    return position <= number;
   }
 }
 
@@ -157,9 +152,9 @@ function getNextPosition(position, direction) {
     case 2:
       return position - 1;
     case 3:
-      return position + 5;
+      return position + number;
     case 4:
-      return position - 5;
+      return position - number;
   }
 }
 
@@ -188,7 +183,7 @@ function MessageAfterSuccessfulMove(position, nextPosition) {
 }
 
 function runExtremeHardMode(position, noOfMoves, pathHasNoBomb) {
-  if (position === 25) {
+  if (position === number * number) {
     return noOfMoves;
   }
 
@@ -207,7 +202,7 @@ function runExtremeHardMode(position, noOfMoves, pathHasNoBomb) {
 }
 
 function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
-  if (position === 25) {
+  if (position === number * number) {
     return noOfMoves;
   }
 
@@ -227,10 +222,10 @@ function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
 
 function runEasyMode(position, noOfMoves, pathHasBomb) {
   let mine = pathHasBomb;
-  if (position === 25) {
+  if (position === number * number) {
     return noOfMoves;
   }
-  if (position === 24 || position === 20) {
+  if (position === number * number - 1 || position === number * number - number) {
     mine = 0;
   }
 
@@ -275,4 +270,5 @@ function play() {
       getDescription();
   }
 }
+const number = +prompt("enter grid size");
 play();
