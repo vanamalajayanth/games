@@ -19,13 +19,11 @@ function getDescription() {
   console.log("▶ escape from the ghosts reach the end");
   console.log("▶ '🦸‍♂️'  indicates current position");
   console.log("▶ '🔲'  indicates previous position");
-  console.log("▶ '👻'  indicates ghost position which you have stepped on");
+  console.log("▶ '👻'  indicates ghost filed position which you have stepped on");
   console.log("▶ '⬛️'  indicates field");
   prompt("press any key");
   console.clear();
-  const mode = +prompt("select mode :\n press 1 ➡️  easy \n press 2 ➡️  hard"
-  );
-  console.log("lets start the game");
+  const mode = +prompt("select mode :\n press 1 ➡️  easy \n press 2 ➡️  hard \n press any key to exit");
   return mode;
 }
 
@@ -175,7 +173,7 @@ function checkAndGetValidDiection(direction, position) {
 function MessageAfterFailedMove(position, nextPosition) {
   console.clear();
   console.log(failedMove(position, nextPosition));
-  console.log("you have stepped on the ghost got you back to the previous location");
+  console.log("you have stepped on the ghost filed . you have brought back to the previous location");
 }
 
 function MessageAfterSuccessfulMove(position, nextPosition) {
@@ -203,22 +201,22 @@ function runHardMode(position, noOfMoves, pathHasNoghost1, pathHasNoghost2) {
 }
 
 function runEasyMode(position, noOfMoves, pathHasghost) {
-  let mine = pathHasghost;
+  let ghostPosition = pathHasghost;
   if (position === number * number) {
     return noOfMoves;
   }
   if (position === number * number - 1 || position === number * number - number) {
-    mine = 0;
+    ghostPosition = 0;
   }
 
   const direction = checkAndGetValidDiection(0, position);
   let nextPosition = getNextPosition(position, direction);
 
 
-  if (isSafeMove(nextPosition, mine)) {
+  if (isSafeMove(nextPosition, ghostPosition)) {
     MessageAfterFailedMove(position, nextPosition);
 
-    return runEasyMode(position, noOfMoves + 1, mine);
+    return runEasyMode(position, noOfMoves + 1, ghostPosition);
   }
   MessageAfterSuccessfulMove(position, nextPosition);
 
@@ -227,10 +225,10 @@ function runEasyMode(position, noOfMoves, pathHasghost) {
 
 function play() {
   if (mode === 1) {
-    console.log("you have completed the easy mode mine game in ", runEasyMode(1, 0, setRandomMove(1)), ' moves');
+    console.log("you have completed the easy mode ghost game in ", runEasyMode(1, 0, setRandomMove(1)), ' moves');
   }
   if (mode === 2) {
-    console.log("you have completed the game in ", runHardMode(1, 0, setRandomMove(1), setRandomMove(1)), " moves");
+    console.log("you have completed the hard mode game in ", runHardMode(1, 0, setRandomMove(1), setRandomMove(1)), " moves");
   }
 }
 
@@ -238,6 +236,7 @@ console.clear();
 const mode = getDescription();
 let number = 0;
 if (mode === 1 || mode === 2) {
+  console.log("lets start the game");
   number = +prompt("enter grid size");
   console.log(printBoard());
   play();
