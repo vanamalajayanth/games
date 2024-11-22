@@ -11,16 +11,16 @@ function getCash(mode) {
 }
 
 function getDescription() {
-  console.log("welcome to mine game.");
+  console.log("welcome to ghost field game.");
   console.log("Rules.");
   console.log("▶ to win the game player should go from the end to the start");
-  console.log("▶ for every successful move bombs position may change");
-  console.log("▶ if you step on the bomb you will be gotten back to the previous position");
-  console.log("▶ bomb positions does not changes if you step on the bomb");
+  console.log("▶ only for every successful move ghosts position may change");
+  console.log("▶ if you go in  to the ghost field  you will be gotten back to the previous position");
+  console.log("▶ escape from the ghosts reach the end");
   console.log("▶ '🦸‍♂️'  indicates current position");
-  console.log("▶ '⬜️'  indicates previous position");
-  console.log("▶ '🟥'  indicates bomb position which you have stepped on");
-  console.log("▶ '🟦'  indicates field");
+  console.log("▶ '🔲'  indicates previous position");
+  console.log("▶ '👻'  indicates ghost position which you have stepped on");
+  console.log("▶ '⬛️'  indicates field");
   prompt("press any key");
   console.clear();
   const mode = +prompt("select mode :\n press 1 ➡️  easy \n press 2 ➡️  hard"
@@ -30,15 +30,15 @@ function getDescription() {
 }
 
 function printBoard() {
-  let string = 'end';
+  let string = '🔴end';
   for (let rowindex = 0; rowindex < number; rowindex++) {
     for (let columnIndex = 0; columnIndex < number; columnIndex++) {
-      string += "🟦";
+      string += "⬛️";
     }
     if (rowindex === number - 1) {
       return string + "⬅️ start";
     }
-    string += "\n   ";
+    string += "\n     ";
   }
 }
 
@@ -47,9 +47,9 @@ function failedMove(position, nextPosition) {
   for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
     for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
       if ((rowIndex * number) + columnIndex === nextPosition) {
-        string += '🟥';
+        string += '👻';
       } else {
-        string += (rowIndex * number) + columnIndex === position ? '🦸‍♂️' : '🟦';
+        string += (rowIndex * number) + columnIndex === position ? '🦸‍♂️' : '⬛️';
       }
     }
     string += rowIndex === 0 ? "⬅️ start" : "\n     ";
@@ -64,7 +64,7 @@ function successMove(position, nextPosition) {
       if ((rowIndex * number) + columnIndex === nextPosition) {
         string += '🦸‍♂️';
       } else {
-        string += (rowIndex * number) + columnIndex === position ? '⬜️' : '🟦';
+        string += (rowIndex * number) + columnIndex === position ? '🔲️' : '⬛️';
       }
     }
     string += rowIndex === 0 ? "⬅️ start" : "\n     ";
@@ -159,8 +159,8 @@ function getNextPosition(position, direction) {
   }
 }
 
-function isSafeMove(position, bombPosition) {
-  return position === bombPosition;
+function isSafeMove(position, ghostPosition) {
+  return position === ghostPosition;
 }
 
 function checkAndGetValidDiection(direction, position) {
@@ -175,7 +175,7 @@ function checkAndGetValidDiection(direction, position) {
 function MessageAfterFailedMove(position, nextPosition) {
   console.clear();
   console.log(failedMove(position, nextPosition));
-  console.log("you have stepped on the bomb got you back to the previous location");
+  console.log("you have stepped on the ghost got you back to the previous location");
 }
 
 function MessageAfterSuccessfulMove(position, nextPosition) {
@@ -183,7 +183,7 @@ function MessageAfterSuccessfulMove(position, nextPosition) {
   console.log(successMove(position, nextPosition));
 }
 
-function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
+function runHardMode(position, noOfMoves, pathHasNoghost1, pathHasNoghost2) {
   if (position === number * number) {
     return noOfMoves;
   }
@@ -191,10 +191,10 @@ function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
   const direction = checkAndGetValidDiection(0, position);
   let nextPosition = getNextPosition(position, direction);
 
-  if (!isSafeMove(nextPosition, pathHasNoBomb1) && !isSafeMove(nextPosition, pathHasNoBomb2)) {
+  if (!isSafeMove(nextPosition, pathHasNoghost1) && !isSafeMove(nextPosition, pathHasNoghost2)) {
     MessageAfterFailedMove(position, nextPosition);
 
-    return runHardMode(position, noOfMoves + 1, pathHasNoBomb1);
+    return runHardMode(position, noOfMoves + 1, pathHasNoghost1);
   }
 
   MessageAfterSuccessfulMove(position, nextPosition);
@@ -202,8 +202,8 @@ function runHardMode(position, noOfMoves, pathHasNoBomb1, pathHasNoBomb2) {
   return runHardMode(nextPosition, noOfMoves + 1, setRandomMove(nextPosition), setRandomMove(nextPosition));
 }
 
-function runEasyMode(position, noOfMoves, pathHasBomb) {
-  let mine = pathHasBomb;
+function runEasyMode(position, noOfMoves, pathHasghost) {
+  let mine = pathHasghost;
   if (position === number * number) {
     return noOfMoves;
   }
