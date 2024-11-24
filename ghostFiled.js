@@ -12,11 +12,11 @@ function getCash(mode) {
 
 function getDescription() {
   console.log("welcome to ghost field game.");
-  console.log("Rules.");
+  console.log("Description :");
+  console.log("There are ghosts in the field. they may keep on changing the positions");
   console.log("▶ to win the game player should go from the end to the start");
-  console.log("▶ only for every successful move ghosts position may change");
-  console.log("▶ if you go in  to the ghost field  you will be gotten back to the previous position");
-  console.log("▶ escape from the ghosts reach the end");
+  console.log("▶ if the ghost is infront of you u can choose any other way except the way in which the ghost is in.");
+  console.log("▶ complete the game in very less moves.");
   console.log("▶ '🦸‍♂️'  indicates current position");
   console.log("▶ '🔲'  indicates previous position");
   console.log("▶ '👻'  indicates ghost filed position which you have stepped on");
@@ -27,43 +27,55 @@ function getDescription() {
   return mode;
 }
 
+function getFiledString(string) {
+  return '🔴end' + string + "⬅️ start";
+}
+
 function printBoard() {
-  let string = '🔴end';
+  let string = '';
   for (let rowindex = 0; rowindex < number; rowindex++) {
     for (let columnIndex = 0; columnIndex < number; columnIndex++) {
       string += "⬛️";
     }
     if (rowindex === number - 1) {
-      return string + "⬅️ start";
+      return getFiledString(string);
     }
     string += "\n     ";
   }
 }
 
-function failedMove(position, nextPosition) {
-  let string = '🔴end';
-  for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
-    for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
-      if ((rowIndex * number) + columnIndex === nextPosition) {
-        string += '👻';
-      } else {
-        string += (rowIndex * number) + columnIndex === position ? '🦸‍♂️' : '⬛️';
-      }
-    }
-    string += rowIndex === 0 ? "⬅️ start" : "\n     ";
-  }
-  return string;
+function isPositionMatching(row, column, position) {
+  return row * number + column === position;
 }
 
-function successMove(position, nextPosition) {
+function failedMove(playerPosition, ghostPosition) {
+  let string = '';
+  for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
+    for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
+      if (isPositionMatching(rowIndex, columnIndex, ghostPosition)) {
+        string += '👻';
+        continue;
+      }
+      string += isPositionMatching(rowIndex, columnIndex, playerPosition) ? '🦸‍♂️' : '⬛️';
+    }
+
+    if (rowIndex === 0) {
+      return getFiledString(string);
+    }
+
+    string += "\n     ";
+  }
+}
+
+function successMove(previousPosition, playerPosition) {
   let string = '🔴end';
   for (let rowIndex = number - 1; rowIndex >= 0; rowIndex--) {
     for (let columnIndex = number; columnIndex >= 1; columnIndex--) {
-      if ((rowIndex * number) + columnIndex === nextPosition) {
+      if (isPositionMatching(rowIndex, columnIndex, playerPosition)) {
         string += '🦸‍♂️';
-      } else {
-        string += (rowIndex * number) + columnIndex === position ? '🔲️' : '⬛️';
+        continue;
       }
+      string += isPositionMatching(rowIndex, columnIndex, previousPosition) ? '🔲️' : '⬛️';
     }
     string += rowIndex === 0 ? "⬅️ start" : "\n     ";
   }
@@ -74,100 +86,67 @@ function getRandomNumber() {
   return Math.round(Math.random() * 100);
 }
 
-function setRandomMove(position) {
-  if (position === number * number - 1 || position === number * number - number) {
-    return number * number;
-  }
-  if (position === 1) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position + number;
-  }
-
-  if (position === number * number - number + 1) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position - number;
-  }
-
-  if (position === number) {
-    return getRandomNumber() % 2 === 0 ? position + number : position - 1;
-  }
-
-  if (position < number) {
-    switch (getRandomNumber() % 3) {
-      case 0:
-        return position - 1;
-      case 1:
-        return position + 1;
-      case 2:
-        return position + number;
-    }
-  }
-
-  if (position % number === 1) {
-    return getRandomNumber() % 2 === 0 ? position + 1 : position + number;
-  }
-
-  if (position % number === 0) {
-    return getRandomNumber() % 2 === 0 ? position - 1 : position + number;
-  }
-
-  if (position > number * number - number) {
-    return getRandomNumber() % 2 === 0 ? position - number : position + 1;
-  }
-
+function getRandomInFour(position) {
   switch (getRandomNumber() % 4) {
     case 0:
       return position + 1;
     case 1:
       return position + number;
     case 2:
-      return position - 1;
-    case 3:
       return position - number;
+    case 3:
+      return position - 1;
   }
 }
 
-function isValidInput(direction) {
-  return direction === 1 || direction === 2 || direction === 3 || direction === 4;
+function getRandomValidMove(position) {
+  if (position === number * number - 1 || position === number * number - number) {
+    return 0;
+  }
+  return getRandomInFour(position);
 }
 
-function isNextMoveValid(position, direction) {
-  if (direction === 1) {
-    return position % number === 0;
+function getValidDirection() {
+  let direction = prompt("A : left \n D : right\n W : up\n S : down");
+
+
+  while (!(direction === 'a' || direction === 'd' || direction === 'w' || direction === 's')) {
+    direction = prompt("invalid direction. Enter again");
   }
-  if (direction === 2) {
-    return position % number === 1;
+
+  return direction;
+}
+
+function isMoveValid(position, direction) {
+  if (direction === 'a') {
+    return position % number !== 0;
   }
-  if (direction === 3) {
-    return position > number * number - number;
+  if (direction === 'd') {
+    return position % number !== 1;
   }
-  if (direction === 4) {
-    return position <= number;
+  if (direction === 'w') {
+    return position <= number * number - number;
+  }
+  if (direction === 's') {
+    return position > number;
   }
 }
 
 function getNextPosition(position, direction) {
   switch (direction) {
-    case 1:
+    case 'a':
       return position + 1;
-    case 2:
+    case 'd':
       return position - 1;
-    case 3:
+    case 'w':
       return position + number;
-    case 4:
+    case 's':
       return position - number;
   }
 }
 
 function isSafeMove(position, ghostPosition) {
-  return position === ghostPosition;
-}
-
-function checkAndGetValidDiection(direction, position) {
-  if (isValidInput(direction) && !isNextMoveValid(position, direction)) {
-    return direction;
-  }
-  console.log("Enter only valid and posiible directions");
-  direction = +prompt("enter\n 1 : for left \n 2 : for right \n 3 : for up\n 4 : for down ");
-  return checkAndGetValidDiection(direction, position);
+  return position !== ghostPosition;
 }
 
 function MessageAfterFailedMove(position, nextPosition) {
@@ -181,64 +160,91 @@ function MessageAfterSuccessfulMove(position, nextPosition) {
   console.log(successMove(position, nextPosition));
 }
 
-function runHardMode(position, noOfMoves, pathHasNoghost1, pathHasNoghost2) {
-  if (position === number * number) {
-    return noOfMoves;
-  }
-
-  const direction = checkAndGetValidDiection(0, position);
-  let nextPosition = getNextPosition(position, direction);
-
-  if (!isSafeMove(nextPosition, pathHasNoghost1) && !isSafeMove(nextPosition, pathHasNoghost2)) {
-    MessageAfterFailedMove(position, nextPosition);
-
-    return runHardMode(position, noOfMoves + 1, pathHasNoghost1);
-  }
-
-  MessageAfterSuccessfulMove(position, nextPosition);
-
-  return runHardMode(nextPosition, noOfMoves + 1, setRandomMove(nextPosition), setRandomMove(nextPosition));
+function isSafeMoveHardMode(position, ghostPosition1, ghostPosition2) {
+  return position !== ghostPosition1 && position !== ghostPosition2;
 }
 
-function runEasyMode(position, noOfMoves, pathHasghost) {
-  let ghostPosition = pathHasghost;
+function runHardMode(position, noOfMoves, ghostPosition1, ghostPosition2) {
+
   if (position === number * number) {
     return noOfMoves;
   }
-  if (position === number * number - 1 || position === number * number - number) {
-    ghostPosition = 0;
+
+  let direction = getValidDirection();
+
+  while (!isMoveValid(position, direction)) {
+    console.log("can't go out of the field . select another direction");
+    direction = getValidDirection();
   }
 
-  const direction = checkAndGetValidDiection(0, position);
-  let nextPosition = getNextPosition(position, direction);
+  const nextPosition = getNextPosition(position, direction);
 
+  if (isSafeMoveHardMode(nextPosition, ghostPosition1, ghostPosition2)) {
+    console.clear();
+    console.log(successMove(position, nextPosition));
+
+    return runHardMode(nextPosition, noOfMoves + 1, getRandomValidMove(nextPosition), getRandomValidMove(nextPosition));
+  }
+
+  console.clear();
+  console.log(failedMove(position, nextPosition));
+
+  return runHardMode(position, noOfMoves + 1, ghostPosition1, ghostPosition2)
+}
+
+function runEasyMode(position, noOfMoves, ghostPosition) {
+
+  if (position === number * number) {
+    return noOfMoves;
+  }
+
+  let direction = getValidDirection();
+
+  while (!isMoveValid(position, direction)) {
+    console.log("can't go out of the field . select another direction");
+    direction = getValidDirection();
+  }
+
+  const nextPosition = getNextPosition(position, direction);
 
   if (isSafeMove(nextPosition, ghostPosition)) {
-    MessageAfterFailedMove(position, nextPosition);
+    console.clear();
+    console.log(successMove(position, nextPosition));
 
-    return runEasyMode(position, noOfMoves + 1, ghostPosition);
+    return runEasyMode(nextPosition, noOfMoves + 1, getRandomValidMove(nextPosition));
   }
-  MessageAfterSuccessfulMove(position, nextPosition);
 
-  return runEasyMode(nextPosition, noOfMoves + 1, setRandomMove(nextPosition));
+  console.clear();
+  console.log(failedMove(position, ghostPosition));
+
+  return runEasyMode(position, noOfMoves + 1, ghostPosition)
 }
 
-function play() {
+function startMode() {
   if (mode === 1) {
-    console.log("you have completed the easy mode ghost game in ", runEasyMode(1, 0, setRandomMove(1)), ' moves');
+    console.log("you have completed the easy mode ghost game in ", runEasyMode(1, 0, getRandomValidMove(1)), ' moves');
   }
   if (mode === 2) {
-    console.log("you have completed the hard mode game in ", runHardMode(1, 0, setRandomMove(1), setRandomMove(1)), " moves");
+    console.log("you have completed the hard mode game in ", runHardMode(1, 0, getRandomValidMove(1), getRandomValidMove(1)), " moves");
   }
 }
 
-console.clear();
-const mode = getDescription();
 let number = 0;
-if (mode === 1 || mode === 2) {
+const mode = getDescription();
+
+function play() {
   console.log("lets start the game");
-  number = +prompt("enter grid size");
-  console.log(printBoard());
-  play();
+  if (mode === 1 || mode === 2) {
+    while (!(number > 0 && number < 21)) {
+      console.clear();
+      number = +prompt("enter grid size from 1 to 20");
+    }
+
+    console.clear();
+    console.log(printBoard());
+    startMode();
+  }
+  console.log(getCash(mode));
 }
-console.log(getCash(mode));
+
+play();
