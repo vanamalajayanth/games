@@ -6,7 +6,7 @@ function getMinimum(number1, number2) {
 }
 
 function getSinValue(number) {
-  return Math.ceil(Math.sin(number * waveLength ) * amplitude) + 45;
+  return Math.ceil(Math.sin(number * waveLength) * amplitude) + 45;
 }
 
 function delay(time) {
@@ -40,4 +40,3 @@ function printDna() {
 }
 
 printDna();
-
