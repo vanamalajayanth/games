@@ -6,7 +6,7 @@ function getMinimum(number1, number2) {
 }
 
 function getSinValue(number) {
-  return Math.ceil(Math.sin(number * waveLength ) * amplitude) + 45;
+  return Math.ceil(Math.sin(number * waveLength) * amplitude) + 45;
 }
 
 function delay(time) {
@@ -29,7 +29,7 @@ function extractDnaBasePair(point1, point2) {
   const middlePart = repeat(' ', Math.abs(point2 - point1) - 1);
   const rightpoint = leftPoint === '🔸' ? '⬥' : '🔸';
 
-  return spaces + leftPoint +'\n' + spaces + middlePart + '  ' + rightpoint;
+  return spaces + leftPoint + '\n' + spaces + middlePart + '  ' + rightpoint;
 }
 
 function printDna() {
@@ -40,3 +40,4 @@ function printDna() {
 }
 
 printDna();
+
